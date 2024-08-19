@@ -19,7 +19,7 @@ var (
 		Code:       P_WS_PATH,
 		VCode:      multiaddr.CodeToVarint(P_WS_PATH),
 		Size:       multiaddr.LengthPrefixedVarSize,
-		Path:       true,
+		Path:       false,
 		Transcoder: multiaddr.TranscoderUnix,
 	}
 )
