@@ -36,7 +36,6 @@ var dialMatcher = mafmt.And(
 
 var (
 	tlsComponent = ma.StringCast("/tls")
-	wsComponent  = ma.StringCast("/ws")
 )
 
 type Option func(*WebsocketTransport) error

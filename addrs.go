@@ -139,15 +139,7 @@ type parsedWebsocketMultiaddr struct {
 func parseWebsocketMultiaddr(a ma.Multiaddr) (parsedWebsocketMultiaddr, error) {
 	out := parsedWebsocketMultiaddr{}
 
-	// Remove the ws component
-	withoutWs := a.Decapsulate(wsComponent)
-	if withoutWs.Equal(a) {
-		return out, fmt.Errorf("not a websocket multiaddr")
-	}
-
 	rest := a
-	// If this is not a wss then withoutWs is the rest of the multiaddr
-	out.restMultiaddr = withoutWs
 	for {
 		var head *ma.Component
 		rest, head = ma.SplitLast(rest)
@@ -157,13 +149,19 @@ func parseWebsocketMultiaddr(a ma.Multiaddr) (parsedWebsocketMultiaddr, error) {
 
 		if head.Protocol().Code == P_WS_PATH {
 			out.path = head
+			out.restMultiaddr = rest
 		} else if head.Protocol().Code == ma.P_SNI {
 			out.sni = head
+			out.restMultiaddr = rest
 		} else if head.Protocol().Code == ma.P_TLS {
 			out.isWSS = true
 			out.restMultiaddr = rest
 			break
 		}
+	}
+
+	if out.path == nil {
+		return out, fmt.Errorf("not a websocket multiaddr")
 	}
 
 	return out, nil
